@@ -8,6 +8,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FlashcardApp extends Application {
 
@@ -89,9 +90,36 @@ public class FlashcardApp extends Application {
             }
         });
 
-        grid.getChildren().addAll(wordLabel, wordInput, meaningLabel, meaningInput, addButton, deleteButton, flashcardLabel, nextButton);
+        // Search Button
+        Button searchButton = new Button("Search Flashcard");
+        GridPane.setConstraints(searchButton, 1, 6);
+        searchButton.setOnAction(e -> {
+            String term = wordInput.getText();
+            String meaning = meaningInput.getText();
 
-        Scene scene = new Scene(grid, 500, 300);
+            // 검색 결과 필터링
+            List<VocabularyManager.Word> results;
+            if (!term.isEmpty()) {
+                results = vocabularyManager.searchByTerm(term);
+            } else if (!meaning.isEmpty()) {
+                results = vocabularyManager.searchByMeaning(meaning);
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Enter a word or meaning to search!");
+                return;
+            }
+
+            if (!results.isEmpty()) {
+                StringBuilder resultText = new StringBuilder("Search Results:\n");
+                results.forEach(word -> resultText.append(word.getTerm()).append(" - ").append(word.getMeaning()).append("\n"));
+                flashcardLabel.setText(resultText.toString());
+            } else {
+                flashcardLabel.setText("No matching flashcards found!");
+            }
+        });
+
+        grid.getChildren().addAll(wordLabel, wordInput, meaningLabel, meaningInput, addButton, deleteButton, flashcardLabel, nextButton, searchButton);
+
+        Scene scene = new Scene(grid, 500, 400);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
