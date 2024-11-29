@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class VocabularyManager {
 
@@ -86,5 +87,19 @@ public void loadWords() {
         public String toString() {
             return term + " - " + meaning;
         }
+    }
+
+    // 단어(term)로 검색
+    public List<Word> searchByTerm(String term) {
+        return wordList.stream()
+                .filter(word -> word.getTerm().toLowerCase().contains(term.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
+    // 뜻(meaning)으로 검색
+    public List<Word> searchByMeaning(String meaning) {
+        return wordList.stream()
+                .filter(word -> word.getMeaning().toLowerCase().contains(meaning.toLowerCase()))
+                .collect(Collectors.toList());
     }
 }

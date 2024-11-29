@@ -222,8 +222,6 @@ private void startReviewMode(Stage stage) {
 }
 
 
-
-
     // 단어 추가 화면
     private void showAddWordScreen(Stage stage) {
         GridPane grid = new GridPane();
