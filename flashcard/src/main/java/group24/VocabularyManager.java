@@ -38,28 +38,28 @@ public class VocabularyManager {
         return wordList;
     }
 
-    // JSON 파일로 단어 저장
-    public void saveWords() {
-        try (Writer writer = new FileWriter(DATA_FILE)) {
-            mapper.writerWithDefaultPrettyPrinter().writeValue(writer, wordList);
-        } catch (IOException e) {
-            System.err.println("Error saving words: " + e.getMessage());
-        }
+// JSON 파일로 단어 저장(인코딩 UTF-8로 변경)
+public void saveWords() {
+    try (Writer writer = new OutputStreamWriter(new FileOutputStream(DATA_FILE), "UTF-8")) {
+        mapper.writerWithDefaultPrettyPrinter().writeValue(writer, wordList);
+    } catch (IOException e) {
+        System.err.println("Error saving words: " + e.getMessage());
+    }
+}
+
+// JSON 파일에서 단어 불러오기(인코딩 UTF-8로 변경)
+public void loadWords() {
+    File file = new File(DATA_FILE);
+    if (!file.exists()) {
+        return; // 파일이 없으면 불러오지 않음
     }
 
-    // JSON 파일에서 단어 불러오기
-    public void loadWords() {
-        File file = new File(DATA_FILE);
-        if (!file.exists()) {
-            return; // 파일이 없으면 불러오지 않음
-        }
-
-        try (Reader reader = new FileReader(file)) {
-            wordList = mapper.readValue(reader, new TypeReference<List<Word>>() {});
-        } catch (IOException e) {
-            System.err.println("Error loading words: " + e.getMessage());
-        }
+    try (Reader reader = new InputStreamReader(new FileInputStream(file), "UTF-8")) {
+        wordList = mapper.readValue(reader, new TypeReference<List<Word>>() {});
+    } catch (IOException e) {
+        System.err.println("Error loading words: " + e.getMessage());
     }
+}
 
     // 단어 클래스
     public static class Word {

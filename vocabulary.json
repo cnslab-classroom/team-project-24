@@ -1,0 +1,10 @@
+[ {
+  "term" : "word",
+  "meaning" : "단어"
+}, {
+  "term" : "hello",
+  "meaning" : "안녕"
+}, {
+  "term" : "group24",
+  "meaning" : "24조"
+} ]
