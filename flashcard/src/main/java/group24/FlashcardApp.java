@@ -5,6 +5,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.*;
@@ -51,7 +52,11 @@ public class FlashcardApp extends Application {
         GridPane.setConstraints(addWordButton, 0, 1);
         addWordButton.setOnAction(e -> showAddWordScreen(stage));
 
-        grid.getChildren().addAll(learningModeButton, reviewModeButton, addWordButton);
+        Button searchModeButton = new Button("검색 모드");
+        GridPane.setConstraints(searchModeButton, 1, 1);
+        searchModeButton.setOnAction(e -> showSearchMode(stage));
+
+        grid.getChildren().addAll(learningModeButton, reviewModeButton, addWordButton, searchModeButton);
 
         Scene scene = new Scene(grid, 400, 200);
         stage.setScene(scene);
@@ -263,6 +268,67 @@ private void startReviewMode(Stage stage) {
         Scene scene = new Scene(grid, 400, 200);
         stage.setScene(scene);
     }
+
+     // 검색 모드 화면
+     private void showSearchMode(Stage stage) {
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(10, 10, 10, 10));
+        grid.setVgap(10);
+        grid.setHgap(10);
+
+        Label searchByTermLabel = new Label("단어로 검색:");
+        GridPane.setConstraints(searchByTermLabel, 0, 0);
+        TextField termField = new TextField();
+        GridPane.setConstraints(termField, 1, 0);
+
+        Label searchByMeaningLabel = new Label("뜻으로 검색:");
+        GridPane.setConstraints(searchByMeaningLabel, 0, 1);
+        TextField meaningField = new TextField();
+        GridPane.setConstraints(meaningField, 1, 1);
+
+        TextArea resultArea = new TextArea();
+        resultArea.setEditable(false);
+        resultArea.setWrapText(true);
+        VBox resultBox = new VBox(resultArea);
+        resultBox.setPadding(new Insets(10, 0, 0, 0));
+        GridPane.setConstraints(resultBox, 0, 3, 2, 1);
+
+        Button searchButton = new Button("검색");
+        GridPane.setConstraints(searchButton, 0, 2);
+        searchButton.setOnAction(e -> {
+            String term = termField.getText().trim();
+            String meaning = meaningField.getText().trim();
+            List<VocabularyManager.Word> results = new ArrayList<>();
+
+            if (!term.isEmpty()) {
+                results.addAll(vocabularyManager.searchByTerm(term));
+            }
+
+            if (!meaning.isEmpty()) {
+                results.addAll(vocabularyManager.searchByMeaning(meaning));
+            }
+
+            if (results.isEmpty()) {
+                resultArea.setText("검색 결과가 없습니다.");
+            } else {
+                StringBuilder resultText = new StringBuilder();
+                for (VocabularyManager.Word word : results) {
+                    resultText.append(word.toString()).append("\n");
+                }
+                resultArea.setText(resultText.toString());
+            }
+        });
+
+        Button backButton = new Button("메인 메뉴로");
+        GridPane.setConstraints(backButton, 1, 2);
+        backButton.setOnAction(e -> showMainMenu(stage));
+
+        grid.getChildren().addAll(searchByTermLabel, termField, searchByMeaningLabel, meaningField, searchButton, backButton, resultBox);
+
+        Scene searchScene = new Scene(grid, 400, 300);
+        stage.setScene(searchScene);
+    }
+
 
     // 정답률 계산
     private int calculateAccuracy() {
