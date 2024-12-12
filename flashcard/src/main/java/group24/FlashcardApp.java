@@ -1,14 +1,23 @@
 package group24;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
-import java.util.*;
 
 public class FlashcardApp extends Application {
 
@@ -134,8 +143,8 @@ public class FlashcardApp extends Application {
         stage.setScene(learningScene);
     }
 
-// 복습 모드 시작
-private void startReviewMode(Stage stage) {
+    // 복습 모드 시작
+    private void startReviewMode(Stage stage) {
     List<VocabularyManager.Word> wordList = new ArrayList<>(vocabularyManager.getWordList());
 
     // 오답 횟수 내림차순 정렬
@@ -226,48 +235,73 @@ private void startReviewMode(Stage stage) {
     stage.setScene(reviewScene);
 }
 
-
-    // 단어 추가 화면
+    // 단어 추가 및 삭제 화면
     private void showAddWordScreen(Stage stage) {
-        GridPane grid = new GridPane();
-        grid.setPadding(new Insets(10, 10, 10, 10));
-        grid.setVgap(10);
-        grid.setHgap(10);
+    GridPane grid = new GridPane();
+    grid.setPadding(new Insets(10, 10, 10, 10));
+    grid.setVgap(10);
+    grid.setHgap(10);
 
-        Label termLabel = new Label("단어:");
-        GridPane.setConstraints(termLabel, 0, 0);
-        TextField termField = new TextField();
-        GridPane.setConstraints(termField, 1, 0);
+    // 단어 추가 관련 UI
+    Label termLabel = new Label("단어:");
+    GridPane.setConstraints(termLabel, 0, 0);
+    TextField termField = new TextField();
+    GridPane.setConstraints(termField, 1, 0);
 
-        Label meaningLabel = new Label("뜻:");
-        GridPane.setConstraints(meaningLabel, 0, 1);
-        TextField meaningField = new TextField();
-        GridPane.setConstraints(meaningField, 1, 1);
+    Label meaningLabel = new Label("뜻:");
+    GridPane.setConstraints(meaningLabel, 0, 1);
+    TextField meaningField = new TextField();
+    GridPane.setConstraints(meaningField, 1, 1);
 
-        Button addButton = new Button("추가");
-        GridPane.setConstraints(addButton, 1, 2);
-        addButton.setOnAction(e -> {
-            String term = termField.getText().trim();
-            String meaning = meaningField.getText().trim();
-            if (!term.isEmpty() && !meaning.isEmpty()) {
-                vocabularyManager.addWord(term, meaning);
-                showAlert(Alert.AlertType.INFORMATION, "단어가 추가되었습니다.");
-                termField.clear();
-                meaningField.clear();
-            } else {
-                showAlert(Alert.AlertType.ERROR, "단어와 뜻을 모두 입력해주세요.");
-            }
-        });
+    Button addButton = new Button("추가");
+    GridPane.setConstraints(addButton, 1, 2);
+    addButton.setOnAction(e -> {
+        String term = termField.getText().trim();
+        String meaning = meaningField.getText().trim();
+        if (!term.isEmpty() && !meaning.isEmpty()) {
+            vocabularyManager.addWord(term, meaning);
+            showAlert(Alert.AlertType.INFORMATION, "단어가 추가되었습니다.");
+            termField.clear();
+            meaningField.clear();
+        } else {
+            showAlert(Alert.AlertType.ERROR, "단어와 뜻을 모두 입력해주세요.");
+        }
+    });
 
-        Button backButton = new Button("메인 메뉴로");
-        GridPane.setConstraints(backButton, 0, 2);
-        backButton.setOnAction(e -> showMainMenu(stage));
+    // 단어 삭제 관련 UI
+    Label deleteTermLabel = new Label("삭제할 단어:");
+    GridPane.setConstraints(deleteTermLabel, 0, 3);
+    TextField deleteField = new TextField();
+    GridPane.setConstraints(deleteField, 1, 3);
 
-        grid.getChildren().addAll(termLabel, termField, meaningLabel, meaningField, addButton, backButton);
+    Button deleteButton = new Button("삭제");
+    GridPane.setConstraints(deleteButton, 1, 4);
+    deleteButton.setOnAction(e -> {
+        String term = deleteField.getText().trim();
+        if (!term.isEmpty()) {
+            vocabularyManager.removeWord(term); // 단어 삭제
+            showAlert(Alert.AlertType.INFORMATION, "단어가 삭제되었습니다.");
+            deleteField.clear();
+        } else {
+            showAlert(Alert.AlertType.ERROR, "삭제할 단어를 입력해주세요.");
+        }
+    });
 
-        Scene scene = new Scene(grid, 400, 200);
-        stage.setScene(scene);
-    }
+    // 메인 메뉴로 돌아가는 버튼
+    Button backButton = new Button("메인 메뉴로");
+    GridPane.setConstraints(backButton, 0, 4);
+    backButton.setOnAction(e -> showMainMenu(stage));
+
+    // UI 요소 추가
+    grid.getChildren().addAll(
+        termLabel, termField, meaningLabel, meaningField, addButton,
+        deleteTermLabel, deleteField, deleteButton, backButton
+    );
+
+    Scene scene = new Scene(grid, 400, 300);
+    stage.setScene(scene);
+}
+
 
      // 검색 모드 화면
      private void showSearchMode(Stage stage) {
